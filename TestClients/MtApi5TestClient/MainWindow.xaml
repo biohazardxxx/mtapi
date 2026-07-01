@@ -167,6 +167,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0" Content="Quotes" Background="LightYellow" />
                         <ListView Grid.Row="1" Margin="2"
@@ -183,6 +184,11 @@
                             </ListView.View>
                         </ListView>
                         <Button Grid.Row="2" Content="Refresh Quotes" Margin="2"  Command="{Binding RefreshQuotesCommand}"/>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="2">
+                            <TextBlock Text="Command timeout (ms):" VerticalAlignment="Center" Margin="2"/>
+                            <TextBox Text="{Binding CommandTimeout}" Width="100" Margin="2"/>
+                            <Button Content="Apply" Margin="2" Command="{Binding TimeoutApplyCommand}"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>

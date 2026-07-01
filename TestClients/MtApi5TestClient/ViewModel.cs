@@ -163,6 +163,8 @@ namespace MtApi5TestClient
 
         public DelegateCommand GetSymbolsCommand { get; private set; }
         public DelegateCommand RefreshQuotesCommand { get; private set; }
+
+        public DelegateCommand TimeoutApplyCommand { get; private set; }
         #endregion
 
         #region Properties
@@ -207,6 +209,17 @@ namespace MtApi5TestClient
             {
                 _port = value;
                 OnPropertyChanged("Port");
+            }
+        }
+
+        private int _command_timeout;
+        public int CommandTimeout
+        {
+            get { return _command_timeout; }
+            set
+            {
+                _command_timeout = value;
+                OnPropertyChanged("CommandTimeout");
             }
         }
 
@@ -350,6 +363,7 @@ namespace MtApi5TestClient
             ConnectionState = _mtApiClient.ConnectionState;
             ConnectionMessage = "Disconnected";
             Port = 8228; //default local port
+            CommandTimeout = _mtApiClient.CommandTimeout;
 
             InitCommands();
 
@@ -494,6 +508,8 @@ namespace MtApi5TestClient
 
             GetSymbolsCommand = new DelegateCommand(ExecuteGetSymbols);
             RefreshQuotesCommand = new DelegateCommand(ExecuteRefreshQuotes);
+
+            TimeoutApplyCommand = new DelegateCommand(ExecuteTimeoutApply);
         }
 
         private bool CanExecuteConnect(object o)
@@ -1773,6 +1789,12 @@ namespace MtApi5TestClient
             }
         }
 
+        private void ExecuteTimeoutApply(object o)
+        {
+            _mtApiClient.CommandTimeout = CommandTimeout;
+            AddLog($"TimeoutApply: timeout = {CommandTimeout} milliseconds");
+        }
+
         private static void RunOnUiThread(Action action)
         {
             Application.Current?.Dispatcher.Invoke(action);
@@ -1851,7 +1873,7 @@ namespace MtApi5TestClient
 
         private void _mtApiClient_OnLastTimeBar(object sender, Mt5TimeBarArgs e)
         {
-            AddLog($"OnLastTimeBarEvent: ExpertHandle = {e.ExpertHandle}, Symbol = {e.Symbol}, open = {e.Rates.open}, close = {e.Rates.close}, time = {e.Rates.time}, high = {e.Rates.high}, low = {e.Rates.low}");
+            AddLog($"OnLastTimeBarEvent: ExpertHandle = {e.ExpertHandle}, Symbol = {e.Symbol}, Timeframe = {e.Timeframe}, open = {e.Rates.open}, close = {e.Rates.close}, time = {e.Rates.time}, high = {e.Rates.high}, low = {e.Rates.low}");
         }
 
         private void _mtApiClient_OnLockTicks(object sender, Mt5LockTicksEventArgs e)

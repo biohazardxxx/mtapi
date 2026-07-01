@@ -65,7 +65,7 @@ namespace MtClient
             logger_.Debug($"MtRpcClient.Disconnect: success");
         }
 
-        public string? SendCommand(int expertHandle, int commandType, string payload)
+        public string? SendCommand(int expertHandle, int commandType, string payload, int timeout = 10000)  // 10 sec
         {
             CommandTask<string> commandTask = new();
             int commandId;
@@ -78,7 +78,7 @@ namespace MtClient
             MtCommand command = new(expertHandle, commandType, commandId, payload);
             Send(command);
 
-            var response = commandTask.WaitResponse(10000); // 10 sec
+            var response = commandTask.WaitResponse(timeout);
             lock (tasks_)
             {
                 tasks_.Remove(commandId);

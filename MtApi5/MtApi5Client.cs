@@ -32,10 +32,23 @@ namespace MtApi5
         
         private HashSet<int> _experts = [];
         private Dictionary<int, Mt5Quote> _quotes = [];
+        private volatile int _command_timeout = 30000; // 30 seconds
         #endregion
 
         #region Public Methods
         private IMtLogger Log { get; }
+
+        // Time in milliseconds to wait for a response from MetaTrader for a command. Default is 30 seconds.
+        public int CommandTimeout
+        {
+            get => _command_timeout;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("Command timeout must be greater than zero.");
+                _command_timeout = value;
+            }
+        }
 
         public MtApi5Client(IMtLogger? log = null)
         {
@@ -3533,7 +3546,7 @@ namespace MtApi5
             var e = JsonConvert.DeserializeObject<OnLastTimeBarEvent>(payload);
             if (e == null || string.IsNullOrEmpty(e.Instrument) || e.Rates == null)
                 return;
-            OnLastTimeBar?.Invoke(this, new Mt5TimeBarArgs(expertHandle, e.Instrument, e.Rates));
+            OnLastTimeBar?.Invoke(this, new Mt5TimeBarArgs(expertHandle, e.Instrument, e.Timeframe, e.Rates));
         }
 
         private void ReceivedOnLockTicksEvent(int expertHandle, string payload)
@@ -3588,7 +3601,7 @@ namespace MtApi5
             var payloadJson = payload == null ? string.Empty : JsonConvert.SerializeObject(payload);
             Log.Debug($"SendCommand: sending '{payloadJson}' ...");
 
-            var responseJson = client.SendCommand(expertHandle, (int)commandType, payloadJson);
+            var responseJson = client.SendCommand(expertHandle, (int)commandType, payloadJson, CommandTimeout);
 
             Log.Debug($"SendCommand: received response JSON [{responseJson}]");
 
