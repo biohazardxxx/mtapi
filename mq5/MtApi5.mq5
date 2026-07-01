@@ -3514,12 +3514,10 @@ string Execute_CalendarCountryById()
    GET_JSON_PAYLOAD(jo);
    GET_LONG_JSON_VALUE(jo, "CountryId", country_id);
    MqlCalendarCountry country;
-   ResetLastError();
    if(CalendarCountryById(country_id, country))
       return CreateSuccessResponse(MqlCalendarCountryToJson(country));
-   int err = GetLastError();
-   if(err == 0) return CreateSuccessResponse(NULL);         // not found
-   return CreateErrorResponse(err, "CalendarCountryById failed");
+   // native returned false: not found / no data -> null Value -> client bool false
+   return CreateSuccessResponse(NULL);
 }
 
 string Execute_CalendarEventById()
@@ -3527,12 +3525,10 @@ string Execute_CalendarEventById()
    GET_JSON_PAYLOAD(jo);
    GET_ULONG_JSON_VALUE(jo, "EventId", event_id);
    MqlCalendarEvent event;
-   ResetLastError();
    if(CalendarEventById(event_id, event))
       return CreateSuccessResponse(MqlCalendarEventToJson(event));
-   int err = GetLastError();
-   if(err == 0) return CreateSuccessResponse(NULL);
-   return CreateErrorResponse(err, "CalendarEventById failed");
+   // native returned false: not found / no data -> null Value -> client bool false
+   return CreateSuccessResponse(NULL);
 }
 
 string Execute_CalendarEventByCountry()
@@ -3568,12 +3564,10 @@ string Execute_CalendarValueById()
    GET_JSON_PAYLOAD(jo);
    GET_ULONG_JSON_VALUE(jo, "ValueId", value_id);
    MqlCalendarValue value;
-   ResetLastError();
    if(CalendarValueById(value_id, value))
       return CreateSuccessResponse(MqlCalendarValueToJson(value));
-   int err = GetLastError();
-   if(err == 0) return CreateSuccessResponse(NULL);
-   return CreateErrorResponse(err, "CalendarValueById failed");
+   // native returned false: not found / no data -> null Value -> client bool false
+   return CreateSuccessResponse(NULL);
 }
 
 string Execute_CalendarValueHistoryByEvent()
