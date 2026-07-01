@@ -3925,3 +3925,50 @@ JSONObject* MqlRatesToJson(const MqlRates& rates)
    jo.put("real_volume", new JSONNumber(rates.real_volume));
    return jo;
 }
+
+JSONObject* MqlCalendarCountryToJson(const MqlCalendarCountry& c)
+{
+   JSONObject *jo = new JSONObject();
+   jo.put("id", new JSONNumber((long)c.id));
+   jo.put("name", new JSONString(c.name));
+   jo.put("code", new JSONString(c.code));
+   jo.put("currency", new JSONString(c.currency));
+   jo.put("currency_symbol", new JSONString(c.currency_symbol));
+   jo.put("url_name", new JSONString(c.url_name));
+   return jo;
+}
+
+JSONObject* MqlCalendarEventToJson(const MqlCalendarEvent& e)
+{
+   JSONObject *jo = new JSONObject();
+   jo.put("id", new JSONNumber((long)e.id));
+   jo.put("type", new JSONNumber((int)e.type));
+   jo.put("sector", new JSONNumber((int)e.sector));
+   jo.put("frequency", new JSONNumber((int)e.frequency));
+   jo.put("time_mode", new JSONNumber((int)e.time_mode));
+   jo.put("country_id", new JSONNumber((long)e.country_id));
+   jo.put("unit", new JSONNumber((int)e.unit));
+   jo.put("importance", new JSONNumber((int)e.importance));
+   jo.put("multiplier", new JSONNumber((int)e.multiplier));
+   jo.put("digits", new JSONNumber((int)e.digits));
+   jo.put("source_url", new JSONString(e.source_url));
+   jo.put("event_code", new JSONString(e.event_code));
+   jo.put("name", new JSONString(e.name));
+   return jo;
+}
+
+JSONObject* MqlCalendarValueToJson(const MqlCalendarValue& v)
+{
+   JSONObject *jo = new JSONObject();
+   jo.put("id", new JSONNumber((long)v.id));
+   jo.put("event_id", new JSONNumber((long)v.event_id));
+   jo.put("mt_time", new JSONNumber((long)v.time));
+   jo.put("mt_period", new JSONNumber((long)v.period));
+   jo.put("revision", new JSONNumber((int)v.revision));
+   jo.put("actual_value", new JSONNumber((long)v.actual_value));
+   jo.put("prev_value", new JSONNumber((long)v.prev_value));
+   jo.put("revised_prev_value", new JSONNumber((long)v.revised_prev_value));
+   jo.put("forecast_value", new JSONNumber((long)v.forecast_value));
+   jo.put("impact_type", new JSONNumber((int)v.impact_type));
+   return jo;
+}
