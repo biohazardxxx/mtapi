@@ -244,10 +244,18 @@ internal class CalendarValueLastResult
 ```
 
 **`bool` + `out` semantics** for single getters (308/309/312): the EA returns
-`ErrorCode = 0` with `Value = null` when the native call returns `false` (not found),
-so `SendCommand<T>` returns `default(T)` (`null`) without throwing — the wrapper maps
-`null → false`. Genuine failures (e.g. calendar unavailable) still return a non-zero
-`ErrorCode` and throw `ExecutionException`, matching the rest of the library.
+`ErrorCode = 0` with `Value = null` whenever the native call returns `false`, so
+`SendCommand<T>` returns `default(T)` (`null`) without throwing — the wrapper maps
+`null → false`.
+
+> **Verified-behavior note (updated after runtime testing):** the design originally
+> planned to still throw for "genuine" failures by inspecting `GetLastError()`. In
+> practice the native `CalendarCountryById/EventById/ValueById` set a nonzero
+> `LastError` even for a simple not-found (e.g. `id = 0`), so there is no reliable way
+> to separate "not found" from "error". The handlers therefore map **any** native
+> `false` to `Value = null` (client `bool = false`), faithfully mirroring the native
+> `bool` contract. Callers that need an error code can read it out-of-band; the
+> connector surface is the `bool`.
 
 Empty string args (`CountryCode`/`Currency` = "") are treated as `NULL` on the MQL side.
 
