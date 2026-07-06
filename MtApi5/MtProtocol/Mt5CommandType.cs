@@ -271,6 +271,13 @@ namespace MtApi5.MtProtocol
         CalendarValueHistoryByEvent = 313,
         CalendarValueHistory = 314,
         CalendarValueLastByEvent = 315,
-        CalendarValueLast = 316
+        CalendarValueLast = 316,
+
+        BuyLimit = 320,
+        SellLimit = 321,
+        BuyStop = 322,
+        SellStop = 323,
+        OrderModify = 324,
+        OrderDelete = 325
     }
 }
