@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using MtApi5;
 using System.Collections.ObjectModel;
@@ -122,6 +123,7 @@ namespace MtApi5TestClient
         public DelegateCommand TesterWithdrawalCommand { get; private set; }
 
         public DelegateCommand TimeCurrentCommand { get; private set; }
+        public DelegateCommand AsyncPipelineDemoCommand { get; private set; }
 
         public DelegateCommand ChartOpenCommand { get; private set; }
         public DelegateCommand ChartTimePriceToXYCommand { get; private set; }
@@ -511,6 +513,7 @@ namespace MtApi5TestClient
             EventChartCustomCommand = new DelegateCommand(ExecuteEventChartCustom);
 
             TimeCurrentCommand = new DelegateCommand(ExecuteTimeCurrent);
+            AsyncPipelineDemoCommand = new DelegateCommand(ExecuteAsyncPipelineDemo);
             TimeTradeServerCommand = new DelegateCommand(ExecuteTimeTradeServer);
             TimeLocalCommand = new DelegateCommand(ExecuteTimeLocal);
             TimeGMTCommand = new DelegateCommand(ExecuteTimeGMT);
@@ -1457,6 +1460,52 @@ namespace MtApi5TestClient
         {
             var retVal = await Execute(() => _mtApiClient.TimeCurrent());
             AddLog($"TimeCurrent: {retVal}");
+        }
+
+        private async void ExecuteAsyncPipelineDemo(object o)
+        {
+            const int count = 20;
+
+            try
+            {
+                AddLog($"AsyncPipelineDemo: running {count} sequential sync calls vs {count} concurrent async calls (PositionsTotal/TimeCurrent)...");
+
+                var syncMs = await Task.Run(() =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    for (var i = 0; i < count; i++)
+                    {
+                        if (i % 2 == 0)
+                            _mtApiClient.PositionsTotal();
+                        else
+                            _mtApiClient.TimeCurrent();
+                    }
+                    watch.Stop();
+                    return watch.ElapsedMilliseconds;
+                });
+
+                var asyncWatch = Stopwatch.StartNew();
+                var tasks = new List<Task>(count);
+                for (var i = 0; i < count; i++)
+                {
+                    if (i % 2 == 0)
+                        tasks.Add(_mtApiClient.PositionsTotalAsync());
+                    else
+                        tasks.Add(_mtApiClient.TimeCurrentAsync());
+                }
+                await Task.WhenAll(tasks);
+                asyncWatch.Stop();
+
+                AddLog($"AsyncPipelineDemo: {count} sequential sync calls - {syncMs} ms; {count} concurrent async calls - {asyncWatch.ElapsedMilliseconds} ms");
+            }
+            catch (ExecutionException ex)
+            {
+                AddLog($"AsyncPipelineDemo: Exception: {ex.ErrorCode} - {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"AsyncPipelineDemo: Exception: {ex.Message}");
+            }
         }
 
         private async void ExecuteTimeTradeServer(object o)
