@@ -297,6 +297,9 @@ namespace MtApi5.MtProtocol
         CustomRatesUpdate = 347,
         CustomTicksAdd = 348,
         CustomTicksDelete = 349,
-        CustomTicksReplace = 350
+        CustomTicksReplace = 350,
+
+        GetAllPositions = 390,
+        GetAllOrders = 391
     }
 }
