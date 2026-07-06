@@ -113,6 +113,8 @@ namespace MtApi5TestClient
         public DelegateCommand PrintCommand { get; private set; }
         public DelegateCommand AlertCommand { get; private set; }
         public DelegateCommand TesterStopCommand { get; private set; }
+        public DelegateCommand TesterDepositCommand { get; private set; }
+        public DelegateCommand TesterWithdrawalCommand { get; private set; }
 
         public DelegateCommand TimeCurrentCommand { get; private set; }
 
@@ -462,6 +464,8 @@ namespace MtApi5TestClient
             GetLastErrorCommand = new DelegateCommand(ExecuteGetLastError);
             ResetLastErrorCommand = new DelegateCommand(ExecuteResetLastError);
             TesterStopCommand = new DelegateCommand(ExecuteTesterStop);
+            TesterDepositCommand = new DelegateCommand(ExecuteTesterDeposit);
+            TesterWithdrawalCommand = new DelegateCommand(ExecuteTesterWithdrawal);
 
             ChartOpenCommand = new DelegateCommand(ExecuteChartOpen);
             ChartTimePriceToXYCommand = new DelegateCommand(ExecuteChartTimePriceToXY);
@@ -1369,6 +1373,20 @@ namespace MtApi5TestClient
         {
             _mtApiClient.TesterStop();
             AddLog("TesterStop: executed.");
+        }
+
+        private async void ExecuteTesterDeposit(object obj)
+        {
+            const double money = 1000;
+            var retVal = await Execute(() => _mtApiClient.TesterDeposit(money));
+            AddLog($"TesterDeposit: money = {money}; result = {retVal}");
+        }
+
+        private async void ExecuteTesterWithdrawal(object obj)
+        {
+            const double money = 1000;
+            var retVal = await Execute(() => _mtApiClient.TesterWithdrawal(money));
+            AddLog($"TesterWithdrawal: money = {money}; result = {retVal}");
         }
 
         private async void ExecuteTimeCurrent(object o)

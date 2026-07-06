@@ -278,6 +278,9 @@ namespace MtApi5.MtProtocol
         BuyStop = 322,
         SellStop = 323,
         OrderModify = 324,
-        OrderDelete = 325
+        OrderDelete = 325,
+
+        TesterDeposit = 370,
+        TesterWithdrawal = 371
     }
 }

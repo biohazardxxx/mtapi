@@ -405,6 +405,9 @@ int preinit()
    ADD_EXECUTOR(324, OrderModify);
    ADD_EXECUTOR(325, OrderDelete);
 
+   ADD_EXECUTOR(370, TesterDeposit);
+   ADD_EXECUTOR(371, TesterWithdrawal);
+
    return (0);
 }
 
@@ -3027,6 +3030,36 @@ string Execute_TesterStop()
 
    TesterStop();
    return CreateSuccessResponse();
+}
+
+string Execute_TesterDeposit()
+{
+   if (!IsTesting())
+   {
+      Print("WARNING: function TesterDeposit can be used only for backtesting");
+      return CreateErrorResponse(-1, "TesterDeposit can be used only for backtesting");
+   }
+
+   GET_JSON_PAYLOAD(jo);
+   GET_DOUBLE_JSON_VALUE(jo, "Money", money);
+
+   bool retVal = TesterDeposit(money);
+   return CreateSuccessResponse(new JSONBool(retVal));
+}
+
+string Execute_TesterWithdrawal()
+{
+   if (!IsTesting())
+   {
+      Print("WARNING: function TesterWithdrawal can be used only for backtesting");
+      return CreateErrorResponse(-1, "TesterWithdrawal can be used only for backtesting");
+   }
+
+   GET_JSON_PAYLOAD(jo);
+   GET_DOUBLE_JSON_VALUE(jo, "Money", money);
+
+   bool retVal = TesterWithdrawal(money);
+   return CreateSuccessResponse(new JSONBool(retVal));
 }
 
 string Execute_TerminalInfoInteger()
