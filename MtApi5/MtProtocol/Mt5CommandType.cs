@@ -283,6 +283,8 @@ namespace MtApi5.MtProtocol
         TesterDeposit = 370,
         TesterWithdrawal = 371,
 
-        SymbolInfoMarginRate = 380
+        SymbolInfoMarginRate = 380,
+
+        EventChartCustom = 385
     }
 }
