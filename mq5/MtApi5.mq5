@@ -32,6 +32,7 @@ enum LockTickType
 };
 
 input int Port = 8228;
+input int CommandPollingIntervalMs = 100; // command polling interval in live trading, ms (10-1000)
 input LockTickType BacktestingLockTicks = NO_LOCK;
 input group           "Disable Events "
 input bool Enable_OnBookEvent = true;                 
@@ -475,8 +476,13 @@ int init()
     }
     else
     {
-       //--- In live trading, poll for commands every 100ms via timer
-       if (!EventSetMillisecondTimer(100))
+       //--- In live trading, poll for commands via timer (configurable interval)
+       int polling_interval = CommandPollingIntervalMs;
+       if (polling_interval < 10) polling_interval = 10;
+       if (polling_interval > 1000) polling_interval = 1000;
+       if (polling_interval != CommandPollingIntervalMs)
+          PrintFormat("[WARNING] CommandPollingIntervalMs=%d out of range, clamped to %d", CommandPollingIntervalMs, polling_interval);
+       if (!EventSetMillisecondTimer(polling_interval))
           Print("[WARNING] Failed to set millisecond timer for command polling");
     }
    //---
