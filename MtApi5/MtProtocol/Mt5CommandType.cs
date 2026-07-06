@@ -281,6 +281,8 @@ namespace MtApi5.MtProtocol
         OrderDelete = 325,
 
         TesterDeposit = 370,
-        TesterWithdrawal = 371
+        TesterWithdrawal = 371,
+
+        SymbolInfoMarginRate = 380
     }
 }
