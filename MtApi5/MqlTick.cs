@@ -39,6 +39,7 @@ namespace MtApi5
 
         public long MtTime { get; set; }          // Time of the last prices update
 
+        public long time_msc { get; set; }        // Time of the last prices update in milliseconds (0 = derive from MtTime)
         public double bid { get; set; }           // Current Bid price
         public double ask { get; set; }           // Current Ask price
         public double last { get; set; }          // Price of the last deal (Last)
