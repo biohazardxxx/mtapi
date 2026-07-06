@@ -34,7 +34,7 @@ enum LockTickType
 };
 
 input int Port = 8228;
-input int CommandPollingIntervalMs = 100; // command polling interval in live trading, ms (10-1000)
+input int CommandPollingIntervalMs = 10; // command polling interval in live trading, ms (10-1000)
 input LockTickType BacktestingLockTicks = NO_LOCK;
 input group           "Disable Events "
 input bool Enable_OnBookEvent = true;                 
@@ -158,17 +158,9 @@ void OnChartEvent(const int id, const long& lparam, const double& dparam, const 
       PrintFormat("%s: id = %d", __FUNCTION__, id);
     #endif
 
-    // JSONString::toString() in json.mqh performs no escaping, so escape sparam manually
-    // (backslash first, then quote and control characters) to keep the event JSON valid.
-    string escaped_sparam = sparam;
-    StringReplace(escaped_sparam, "\\", "\\\\");
-    StringReplace(escaped_sparam, "\"", "\\\"");
-    StringReplace(escaped_sparam, "\n", "\\n");
-    StringReplace(escaped_sparam, "\r", "\\r");
-    StringReplace(escaped_sparam, "\t", "\\t");
-
     // Custom events sent with EventChartCustom arrive with id = CHARTEVENT_CUSTOM (1000) + custom event id.
-    MtOnChartEvent chart_event(id, lparam, dparam, escaped_sparam);
+    // sparam is escaped by JSONString::toString() during serialization.
+    MtOnChartEvent chart_event(id, lparam, dparam, sparam);
     SendMtEvent(ON_CHART_EVENT, chart_event);
 }
 
@@ -4142,20 +4134,6 @@ string Execute_CustomTicksReplace()
 //| Position/order snapshot command handlers                         |
 //+------------------------------------------------------------------+
 
-// JSONString::toString() in json.mqh performs no escaping, so escape broker
-// provided strings manually (backslash first, then quote and control
-// characters) to keep the response JSON valid.
-string EscapeJsonString(string value)
-{
-   string escaped = value;
-   StringReplace(escaped, "\\", "\\\\");
-   StringReplace(escaped, "\"", "\\\"");
-   StringReplace(escaped, "\n", "\\n");
-   StringReplace(escaped, "\r", "\\r");
-   StringReplace(escaped, "\t", "\\t");
-   return escaped;
-}
-
 string Execute_GetAllPositions()
 {
    int total = PositionsTotal();
@@ -4169,7 +4147,7 @@ string Execute_GetAllPositions()
 
       JSONObject* jo = new JSONObject();
       jo.put("Ticket", new JSONNumber((long)ticket));
-      jo.put("Symbol", new JSONString(EscapeJsonString(PositionGetString(POSITION_SYMBOL))));
+      jo.put("Symbol", new JSONString(PositionGetString(POSITION_SYMBOL)));
       jo.put("MtTime", new JSONNumber(PositionGetInteger(POSITION_TIME)));
       jo.put("TimeMsc", new JSONNumber(PositionGetInteger(POSITION_TIME_MSC)));
       jo.put("MtTimeUpdate", new JSONNumber(PositionGetInteger(POSITION_TIME_UPDATE)));
@@ -4184,8 +4162,8 @@ string Execute_GetAllPositions()
       jo.put("PriceCurrent", new JSONNumber(PositionGetDouble(POSITION_PRICE_CURRENT)));
       jo.put("Swap", new JSONNumber(PositionGetDouble(POSITION_SWAP)));
       jo.put("Profit", new JSONNumber(PositionGetDouble(POSITION_PROFIT)));
-      jo.put("Comment", new JSONString(EscapeJsonString(PositionGetString(POSITION_COMMENT))));
-      jo.put("ExternalId", new JSONString(EscapeJsonString(PositionGetString(POSITION_EXTERNAL_ID))));
+      jo.put("Comment", new JSONString(PositionGetString(POSITION_COMMENT)));
+      jo.put("ExternalId", new JSONString(PositionGetString(POSITION_EXTERNAL_ID)));
       jaPositions.put(idx, jo);
       idx++;
    }
@@ -4206,7 +4184,7 @@ string Execute_GetAllOrders()
 
       JSONObject* jo = new JSONObject();
       jo.put("Ticket", new JSONNumber((long)ticket));
-      jo.put("Symbol", new JSONString(EscapeJsonString(OrderGetString(ORDER_SYMBOL))));
+      jo.put("Symbol", new JSONString(OrderGetString(ORDER_SYMBOL)));
       jo.put("MtTimeSetup", new JSONNumber(OrderGetInteger(ORDER_TIME_SETUP)));
       jo.put("TimeSetupMsc", new JSONNumber(OrderGetInteger(ORDER_TIME_SETUP_MSC)));
       jo.put("MtTimeExpiration", new JSONNumber(OrderGetInteger(ORDER_TIME_EXPIRATION)));
@@ -4224,8 +4202,8 @@ string Execute_GetAllOrders()
       jo.put("TakeProfit", new JSONNumber(OrderGetDouble(ORDER_TP)));
       jo.put("PriceCurrent", new JSONNumber(OrderGetDouble(ORDER_PRICE_CURRENT)));
       jo.put("PriceStopLimit", new JSONNumber(OrderGetDouble(ORDER_PRICE_STOPLIMIT)));
-      jo.put("Comment", new JSONString(EscapeJsonString(OrderGetString(ORDER_COMMENT))));
-      jo.put("ExternalId", new JSONString(EscapeJsonString(OrderGetString(ORDER_EXTERNAL_ID))));
+      jo.put("Comment", new JSONString(OrderGetString(ORDER_COMMENT)));
+      jo.put("ExternalId", new JSONString(OrderGetString(ORDER_EXTERNAL_ID)));
       jo.put("Reason", new JSONNumber((int)OrderGetInteger(ORDER_REASON)));
       jaOrders.put(idx, jo);
       idx++;
