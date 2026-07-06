@@ -2135,6 +2135,8 @@ namespace MtApi5TestClient
                 AddLog($"  event={v.event_id}; time={v.time:u}; actual={v.ActualValue}; " +
                        $"forecast={v.ForecastValue}; prev={v.PrevValue}; impact={v.impact_type}");
             }
+        }
+
         private async void ExecuteCustomSymbolTest(object o)
         {
             const string symbol = "MtApi5.Custom";

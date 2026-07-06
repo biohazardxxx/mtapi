@@ -3998,6 +3998,8 @@ string Execute_CalendarValueLast()
    body.put("ChangeId", new JSONNumber((long)change_id));
    body.put("Values", ja);
    return CreateSuccessResponse(body);
+}
+
 string Execute_EventChartCustom()
 {
    GET_JSON_PAYLOAD(jo);
@@ -4010,6 +4012,9 @@ string Execute_EventChartCustom()
    // The event is delivered back through OnChartEvent with id = CHARTEVENT_CUSTOM (1000) + custom_event_id.
    bool result = EventChartCustom(chart_id, (ushort)custom_event_id, lparam, dparam, sparam);
    return CreateSuccessResponse(new JSONBool(result));
+}
+
+//+------------------------------------------------------------------+
 //| Custom symbols command handlers                                  |
 //+------------------------------------------------------------------+
 string Execute_CustomSymbolCreate()
@@ -4131,6 +4136,9 @@ string Execute_CustomTicksReplace()
       return CreateErrorResponse(-1, "Failed to parse parameter Ticks");
    int result = CustomTicksReplace(symbol_name, from_msc, to_msc, ticks);
    return CreateSuccessResponse(new JSONNumber((long)result));
+}
+
+//+------------------------------------------------------------------+
 //| Position/order snapshot command handlers                         |
 //+------------------------------------------------------------------+
 
@@ -4729,6 +4737,8 @@ JSONObject* MqlCalendarValueToJson(const MqlCalendarValue& v)
    jo.put("forecast_value", new JSONNumber((long)v.forecast_value));
    jo.put("impact_type", new JSONNumber((int)v.impact_type));
    return jo;
+}
+
 bool JsonToMqlRates(JSONObject* jo, MqlRates& rates)
 {
    if (jo == NULL) return false;
