@@ -28,6 +28,7 @@ namespace MtApi5
             if (tick != null)
             {
                 MtTime = tick.Time;
+                time_msc = tick.TimeMsc;
                 bid = tick.Bid;
                 ask = tick.Ask;
                 last = tick.Last;

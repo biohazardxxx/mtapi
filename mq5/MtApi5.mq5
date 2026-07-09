@@ -4597,6 +4597,7 @@ JSONObject* MqlTickToJson(const MqlTick& tick)
 
     JSONObject *jo = new JSONObject();
     jo.put("Time", new JSONNumber((long)tick.time));
+    jo.put("TimeMsc", new JSONNumber(tick.time_msc));
     jo.put("Bid", new JSONNumber(tick.bid));
     jo.put("Ask", new JSONNumber(tick.ask));
     jo.put("Last", new JSONNumber(tick.last));
